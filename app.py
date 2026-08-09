@@ -151,10 +151,17 @@ encouragements = [
     "每一道題目都是一個學習的機會，你願意認真去想、去寫，就是一個百分之百的進步。"
 ]
 
-st.title("🧮 小二數學趣味挑戰賽")
-st.write("家長好！歡迎黎到小二數學訓練營，請設定下方選項後開始挑戰！")
-
+# 根據遊戲是否開始來顯示畫面
 if not st.session_state.game_started:
+    # 顯示鸚鵡課堂圖片（位於標題上方）
+    try:
+        st.image("parrot_classroom.jpg", use_container_width=True)
+    except Exception:
+        st.warning("（提示：找不到圖片檔案 `parrot_classroom.jpg`，請確保圖片檔與程式碼放在同一資料夾內！）")
+
+    st.title("🧮 小二數學趣味挑戰賽")
+    st.write("家長好！歡迎黎到小二數學訓練營，請設定下方選項後開始挑戰！")
+
     st.subheader("⚙️ 挑戰設定")
     difficulty = st.selectbox("選擇難度級別：", ["全部", "簡單", "中等", "困難"])
     question_count = st.selectbox("選擇題目數量：", [10, 20, 30, 40], index=1)
@@ -206,7 +213,6 @@ else:
         if percentage >= 0.7:
             st.markdown("---")
             st.markdown("### 🎓 恭喜你達標 7 成以上！觀看小學士鸚鵡的慶祝影片：")
-            # 提示：請將你的影片檔命名為 parrot_celebration.mp4 並放在與此程式碼相同的資料夾中
             try:
                 st.video("parrot_celebration.mp4")
             except Exception:
@@ -245,3 +251,4 @@ else:
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
+            

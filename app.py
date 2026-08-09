@@ -32,7 +32,7 @@ if "question_bank" not in st.session_state:
         {"q": "計算4 x 2 = ?", "a": "8", "difficulty": "簡單"},
         {"q": "平年的一年共有多少天？", "a": "365", "difficulty": "簡單"},
         {"q": "1米等於多少厘米？", "a": "100", "difficulty": "簡單"},
-        {"q": "三角形有幾個角？", "a": "3", "difficulty": "簡單"},
+        {"q": "三角形有幾多隻角？", "a": "3", "difficulty": "簡單"},
         {"q": "計算20 ÷ 4 = ?", "a": "5", "difficulty": "簡單"},
         {"q": "媽媽有10元，買了5元的糖果，還餘多少元？", "a": "5", "difficulty": "簡單"},
         {"q": "6 x 7 = ?", "a": "42", "difficulty": "簡單"},

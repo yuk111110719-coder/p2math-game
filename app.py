@@ -160,7 +160,7 @@ if not st.session_state.game_started:
         st.warning("（提示：找不到圖片檔案 `parrot_classroom.jpg`，請確保圖片檔與程式碼放在同一資料夾內！）")
 
     st.title("🧮 小二數學趣味挑戰賽")
-    st.write("家長好！歡迎黎到小二數學訓練營，請設定下方選項後開始挑戰！")
+    st.write("小朋友你好！歡迎黎到小二數學訓練營，設定下方選項後便開始挑戰啦！")
 
     st.subheader("⚙️ 挑戰設定")
     difficulty = st.selectbox("選擇難度級別：", ["全部", "簡單", "中等", "困難"])

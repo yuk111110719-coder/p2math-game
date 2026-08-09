@@ -155,7 +155,7 @@ encouragements = [
 if not st.session_state.game_started:
     # 顯示鸚鵡課堂圖片（位於標題上方）
     try:
-        st.image("parrot_classroom.jpg", use_container_width=True)
+        st.image("parrot_classroom.jpeg", use_container_width=True)
     except Exception:
         st.warning("（提示：找不到圖片檔案 `parrot_classroom.jpg`，請確保圖片檔與程式碼放在同一資料夾內！）")
 

@@ -1,8 +1,9 @@
 import random
 import math
+import time
 import streamlit as st
 
-# 初始化題庫（包含難度分類）
+# 初始化題庫（包含難度分類與選擇題選項）
 if "question_bank" not in st.session_state:
     st.session_state.question_bank = [
         {"q": "丸丸有硬幣24個，每3個整齊疊起，可分成幾疊？", "a": "8", "difficulty": "中等"},
@@ -49,10 +50,10 @@ if "question_bank" not in st.session_state:
         {"q": "2 x 6 = ?", "a": "12", "difficulty": "簡單"},
         {"q": "12 x 1 = ?", "a": "12", "difficulty": "簡單"},
         {"q": "豆豆原本有11粒朱古力，分左俾爸爸2粒，分左俾媽媽2粒，分左俾姐姐2粒，她仲有幾多粒?", "a": "5", "difficulty": "簡單"},
-        {"q": "星期二的前一日係星期幾？", "a": "星期一", "difficulty": "中等", "options": ["星期日", "星期一", "星期三", "星期四"]},
+        {"q": "星期二的前一日係星期幾？", "a": "星期一", "difficulty": "中等", "options": ["日", "一", "三", "四"]},
         {"q": "4 x 5 + 10 = ?", "a": "30", "difficulty": "中等"},
         {"q": "一碟餃子有6隻，買了4碟共有多少隻？", "a": "24", "difficulty": "中等"},
-        {"q": "如果今天是7月1日，一星期後是幾月幾日？", "a": "7月8日", "difficulty": "中等", "options": ["7月5日", "7月6日", "7月7日", "7月8日"]},
+        {"q": "如果今天是7月1日，一星期後是幾月幾日？", "a": "7月8日", "difficulty": "中等"},
         {"q": "現在是3時15分，1小時後是幾時幾分？", "a": "4時15分", "difficulty": "中等"},
         {"q": "一個橙售5元，買6個橙共付多少元？", "a": "30", "difficulty": "中等"},
         {"q": "四角柱體共有多少個面？", "a": "6", "difficulty": "中等"},
@@ -60,7 +61,7 @@ if "question_bank" not in st.session_state:
         {"q": "8 x 3 - 5 = ?", "a": "19", "difficulty": "中等"},
         {"q": "150 + 250 = ?", "a": "400", "difficulty": "中等"},
         {"q": "梓謙有20元，買一個8元的麵包，還餘多少元？", "a": "12", "difficulty": "中等"},
-        {"q": "鐘面顯示11:45，20分鐘後是幾時幾分？", "a": "12時05分", "difficulty": "中等","options": ["11:55", "12:00", "12:05", "12:10"]},
+        {"q": "鐘面顯示11:45，20分鐘後是幾時幾分？", "a": "12時05分", "difficulty": "中等", "options": ["12時05分", "12時15分", "11時65分", "13時05分"]},
         {"q": "10是2的多少倍？", "a": "5", "difficulty": "中等"},
         {"q": "一個長方形有幾條「對」邊？", "a": "2", "difficulty": "中等"},
         {"q": "300 + 400 - 100 = ?", "a": "600", "difficulty": "中等"},
@@ -134,6 +135,7 @@ def start_game(difficulty, timer_enabled, seconds_per_question, question_count):
     st.session_state.wrong_questions = []
     st.session_state.game_started = True
     st.session_state.game_over = False
+    st.session_state.q_start_time = time.time()
 
 # 初始化遊戲狀態
 if "game_started" not in st.session_state:
@@ -153,11 +155,10 @@ encouragements = [
 
 # 根據遊戲是否開始來顯示畫面
 if not st.session_state.game_started:
-    # 顯示鸚鵡課堂圖片（位於標題上方）
     try:
         st.image("parrot_classroom.jpeg", use_container_width=True)
     except Exception:
-        st.warning("（提示：找不到圖片檔案 `parrot_classroom.jpg` 或 `parrot_classroom.jpeg`，請確保圖片檔與程式碼放在同一資料夾內！）")
+        st.warning("（提示：找不到圖片檔案 `parrot_classroom.jpeg`，請確保圖片檔與程式碼放在同一資料夾內！）")
 
     st.title("🧮 小二數學趣味挑戰賽")
     st.write("小朋友你好！歡迎黎到小二數學訓練營，設定下方選項後便開始挑戰啦！")
@@ -178,11 +179,33 @@ else:
         idx = st.session_state.current_index
         q_item = st.session_state.selected_questions[idx]
         
+        # 計時器邏輯檢查（若開啟計時器）
+        if st.session_state.timer_enabled:
+            if "q_start_time" not in st.session_state:
+                st.session_state.q_start_time = time.time()
+            
+            elapsed = time.time() - st.session_state.q_start_time
+            remaining = int(st.session_state.seconds_per_question - elapsed)
+            
+            if remaining <= 0:
+                st.warning("⏰ 這一題的時間到囉！自動記錄為答錯並跳到下一題。")
+                if q_item not in st.session_state.wrong_questions:
+                    st.session_state.wrong_questions.append(q_item)
+                
+                if st.session_state.current_index < total_questions - 1:
+                    st.session_state.current_index += 1
+                    st.session_state.q_start_time = time.time()
+                    st.rerun()
+                else:
+                    st.session_state.game_over = True
+                    st.rerun()
+            else:
+                st.info(f"⏳ 剩餘作答時間：**{remaining}** 秒")
+        
         st.subheader(f"第 {idx + 1} 題 / 共 {total_questions} 題 (難度：{q_item.get('difficulty', '綜合')})")
         st.markdown(f"**{q_item['q']}**")
         
         with st.form(f"form_{idx}"):
-            # 檢查這題是否有設定選項，自動切換單選題或文字輸入
             if "options" in q_item and q_item["options"]:
                 user_ans = st.radio("請選擇正確答案：", q_item["options"], key=f"ans_radio_{idx}")
             else:
@@ -191,6 +214,21 @@ else:
             submitted = st.form_submit_button("提交答案")
             
             if submitted:
+                # 再次檢查提交當下是否已經超時
+                if st.session_state.timer_enabled:
+                    elapsed = time.time() - st.session_state.q_start_time
+                    if elapsed > st.session_state.seconds_per_question:
+                        st.error("⏰ 哎呀，超時了！這題算作答錯誤。")
+                        if q_item not in st.session_state.wrong_questions:
+                            st.session_state.wrong_questions.append(q_item)
+                        if st.session_state.current_index < total_questions - 1:
+                            st.session_state.current_index += 1
+                            st.session_state.q_start_time = time.time()
+                            st.rerun()
+                        else:
+                            st.session_state.game_over = True
+                            st.rerun()
+
                 if str(user_ans).strip() == str(q_item['a']).strip():
                     st.success("答啱咗！好叻女呀！🎉")
                     st.session_state.score += 1
@@ -201,6 +239,7 @@ else:
                 
                 if st.session_state.current_index < total_questions - 1:
                     st.session_state.current_index += 1
+                    st.session_state.q_start_time = time.time()
                     st.rerun()
                 else:
                     st.session_state.game_over = True
@@ -214,7 +253,6 @@ else:
         st.success(f"挑戰結束！你一共答啱咗 {score} / {total_questions} 題！")
         st.info(random.choice(encouragements))
         
-        # 判斷是否達到 7 成（70%）以上
         if percentage >= 0.7:
             st.markdown("---")
             st.markdown("### 🎓 恭喜你達標 7 成以上！觀看小學士鸚鵡的慶祝影片：")
@@ -223,7 +261,6 @@ else:
             except Exception:
                 st.warning("（提示：找不到影片檔案 `parrot_celebration.mp4`，請確保影片檔與程式碼放在同一資料夾內！）")
         
-        # 顯示錯題重溫與重新挑戰專區
         if st.session_state.wrong_questions:
             st.markdown("---")
             st.subheader("📝 錯題重溫與重新挑戰")

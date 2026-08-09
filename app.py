@@ -181,19 +181,17 @@ else:
         st.subheader(f"第 {idx + 1} 題 / 共 {total_questions} 題 (難度：{q_item.get('difficulty', '綜合')})")
         st.markdown(f"**{q_item['q']}**")
         
-      with st.form(f"form_{idx}"):
-                # 檢查這題是否有設定選項
+        with st.form(f"form_{idx}"):
+            # 檢查這題是否有設定選項，自動切換單選題或文字輸入
             if "options" in q_item and q_item["options"]:
-                # 如果有選項，使用單選題
                 user_ans = st.radio("請選擇正確答案：", q_item["options"], key=f"ans_radio_{idx}")
             else:
-                # 如果沒有選項，維持原本的文字輸入
                 user_ans = st.text_input("請輸入你的答案：", key=f"ans_text_{idx}").strip()
             
             submitted = st.form_submit_button("提交答案")
             
             if submitted:
-                if user_ans == q_item['a']:
+                if str(user_ans).strip() == str(q_item['a']).strip():
                     st.success("答啱咗！好叻女呀！🎉")
                     st.session_state.score += 1
                 else:
@@ -203,6 +201,9 @@ else:
                 
                 if st.session_state.current_index < total_questions - 1:
                     st.session_state.current_index += 1
+                    st.rerun()
+                else:
+                    st.session_state.game_over = True
                     st.rerun()
                 else:
                     st.session_state.game_over = True

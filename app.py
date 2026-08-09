@@ -160,7 +160,7 @@ if not st.session_state.game_started:
     difficulty = st.selectbox("選擇難度級別：", ["全部", "簡單", "中等", "困難"])
     
     # 增加選題數量設定
-    question_count = st.selectbox("選擇題目數量：", [10, 20, 30, 40], index=1)
+    question_count = st.selectbox("選擇題目數量：", [10, 20, 30], index=1)
     
     timer_enabled = st.checkbox("開啟限時計時器", value=False)
     seconds_per_question = st.slider("每題作答秒數：", 5, 30, 15)

@@ -208,6 +208,7 @@ else:
                 else:
                     st.session_state.game_over = True
                     st.rerun()
+                    
     else:
         total_questions = len(st.session_state.selected_questions)
         score = st.session_state.score

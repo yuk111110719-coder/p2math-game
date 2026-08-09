@@ -169,7 +169,6 @@ if not st.session_state.game_started:
     
     timer_enabled = st.checkbox("開啟限時計時器", value=False)
     
-    # 這裡將秒數選項改為：10秒、30秒、1分鐘(60秒)
     timer_options = {
         "10 秒": 10,
         "30 秒": 30,
@@ -188,31 +187,33 @@ else:
         idx = st.session_state.current_index
         q_item = st.session_state.selected_questions[idx]
         
-        # 計時器邏輯與自動重新整理
+        # 使用 st.fragment 建立每秒自動更新的獨立計時器區塊
         if st.session_state.timer_enabled:
-            if "q_start_time" not in st.session_state:
-                st.session_state.q_start_time = time.time()
+            @st.fragment(run_every=1)
+            def countdown_timer():
+                if not st.session_state.game_over:
+                    if "q_start_time" not in st.session_state:
+                        st.session_state.q_start_time = time.time()
+                    
+                    elapsed = time.time() - st.session_state.q_start_time
+                    remaining = int(st.session_state.seconds_per_question - elapsed)
+                    
+                    if remaining <= 0:
+                        st.warning("⏰ 這一題的時間到囉！自動記錄為答錯並跳到下一題。")
+                        if q_item not in st.session_state.wrong_questions:
+                            st.session_state.wrong_questions.append(q_item)
+                        
+                        if st.session_state.current_index < total_questions - 1:
+                            st.session_state.current_index += 1
+                            st.session_state.q_start_time = time.time()
+                            st.rerun()
+                        else:
+                            st.session_state.game_over = True
+                            st.rerun()
+                    else:
+                        st.info(f"⏳ 剩餘作答時間：**{remaining}** 秒")
             
-            elapsed = time.time() - st.session_state.q_start_time
-            remaining = int(st.session_state.seconds_per_question - elapsed)
-            
-            if remaining <= 0:
-                st.warning("⏰ 這一題的時間到囉！自動記錄為答錯並跳到下一題。")
-                if q_item not in st.session_state.wrong_questions:
-                    st.session_state.wrong_questions.append(q_item)
-                
-                if st.session_state.current_index < total_questions - 1:
-                    st.session_state.current_index += 1
-                    st.session_state.q_start_time = time.time()
-                    st.rerun()
-                else:
-                    st.session_state.game_over = True
-                    st.rerun()
-            else:
-                st.info(f"⏳ 剩餘作答時間：**{remaining}** 秒")
-                # 關鍵：利用 st.rerun 配合 sleep 1 秒讓畫面每秒自動倒數更新
-                time.sleep(1)
-                st.rerun()
+            countdown_timer()
         
         st.subheader(f"第 {idx + 1} 題 / 共 {total_questions} 題 (難度：{q_item.get('difficulty', '綜合')})")
         st.markdown(f"**{q_item['q']}**")

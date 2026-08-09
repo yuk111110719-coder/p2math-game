@@ -110,7 +110,7 @@ if "question_bank" not in st.session_state:
         {"q": "一個長方形長度是10米，闊度是5米，周界是多少厘米？", "a": "3000", "difficulty": "困難"}
     ]
 
-def create_question_set(difficulty):
+def create_question_set(difficulty, question_count):
     if difficulty == "全部":
         pool = st.session_state.question_bank
     else:
@@ -119,18 +119,20 @@ def create_question_set(difficulty):
     if not pool:
         pool = st.session_state.question_bank
         
-    target_count = min(20, len(pool))
+    # 根據用戶選擇的題數與實際題庫數量取較小值，避免超出範圍
+    target_count = min(question_count, len(pool))
     selected = random.sample(pool, target_count)
     return selected
 
-def start_game(difficulty, timer_enabled, seconds_per_question):
+def start_game(difficulty, timer_enabled, seconds_per_question, question_count):
     st.session_state.difficulty = difficulty
     st.session_state.timer_enabled = timer_enabled
     st.session_state.seconds_per_question = seconds_per_question
-    st.session_state.selected_questions = create_question_set(difficulty)
+    st.session_state.question_count = question_count
+    st.session_state.selected_questions = create_question_set(difficulty, question_count)
     st.session_state.current_index = 0
     st.session_state.score = 0
-    st.session_state.wrong_questions = []  # 初始化錯題清單
+    st.session_state.wrong_questions = []
     st.session_state.game_started = True
     st.session_state.game_over = False
 
@@ -156,11 +158,15 @@ st.write("家長好！歡迎黎到小二數學訓練營，請設定下方選項�
 if not st.session_state.game_started:
     st.subheader("⚙️ 挑戰設定")
     difficulty = st.selectbox("選擇難度級別：", ["全部", "簡單", "中等", "困難"])
+    
+    # 增加選題數量設定
+    question_count = st.selectbox("選擇題目數量：", [10, 20, 30, 40], index=1)
+    
     timer_enabled = st.checkbox("開啟限時計時器", value=False)
     seconds_per_question = st.slider("每題作答秒數：", 5, 30, 15)
     
     if st.button("🚀 開始挑戰", type="primary"):
-        start_game(difficulty, timer_enabled, seconds_per_question)
+        start_game(difficulty, timer_enabled, seconds_per_question, question_count)
         st.rerun()
 
 else:
@@ -182,7 +188,6 @@ else:
                     st.session_state.score += 1
                 else:
                     st.error(f"唔好灰心，正確答案係 {q_item['a']}，下次繼續努力！💪")
-                    # 將錯題記錄到 session_state 中
                     if q_item not in st.session_state.wrong_questions:
                         st.session_state.wrong_questions.append(q_item)
                 
@@ -231,3 +236,4 @@ else:
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
+        

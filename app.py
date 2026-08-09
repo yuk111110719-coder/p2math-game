@@ -9,8 +9,7 @@ if "question_bank" not in st.session_state:
         {"q": "把20隻雞腿每4隻放一袋，可分成幾袋？", "a": "5", "difficulty": "簡單"},
         {"q": "計算：190 + 429 - 250 = ?", "a": "369", "difficulty": "困難"},
         {"q": "計算：56 ÷ 7 = ?", "a": "8", "difficulty": "簡單"},
-        {"q": "家琪面向西方，他右轉一個直角後，他的前面是什麼方？（請輸入中文字，X方）", "a": "北方", "difficulty": "中等"},
-        {"q": "小多面向東方，她左轉一個直角後，她的後面是什麼方？（請輸入中文字，X方）", "a": "南方", "difficulty": "困難"},
+        {"q": "家琪面向西方，他右轉一個直角後，他的前面是什麼方？", "a": "北", "difficulty": "中等"},
         {"q": "現在是3時59分，1分鐘後是幾時？（只需輸入數字）", "a": "4", "difficulty": "簡單"},
         {"q": "計算：7 x 7 = ?", "a": "49", "difficulty": "簡單"},
         {"q": "一打雞蛋有12隻，買2打雞蛋共有多少隻？", "a": "24", "difficulty": "簡單"},
@@ -120,7 +119,6 @@ def create_question_set(difficulty, question_count):
     if not pool:
         pool = st.session_state.question_bank
         
-    # 根據用戶選擇的題數與實際題庫數量取較小值，避免超出範圍
     target_count = min(question_count, len(pool))
     selected = random.sample(pool, target_count)
     return selected
@@ -159,10 +157,7 @@ st.write("家長好！歡迎黎到小二數學訓練營，請設定下方選項�
 if not st.session_state.game_started:
     st.subheader("⚙️ 挑戰設定")
     difficulty = st.selectbox("選擇難度級別：", ["全部", "簡單", "中等", "困難"])
-    
-    # 增加選題數量設定
-    question_count = st.selectbox("選擇題目數量：", [10, 20, 30], index=1)
-    
+    question_count = st.selectbox("選擇題目數量：", [10, 20, 30, 40], index=1)
     timer_enabled = st.checkbox("開啟限時計時器", value=False)
     seconds_per_question = st.slider("每題作答秒數：", 5, 30, 15)
     
@@ -200,9 +195,22 @@ else:
                     st.rerun()
     else:
         total_questions = len(st.session_state.selected_questions)
+        score = st.session_state.score
+        percentage = (score / total_questions) if total_questions > 0 else 0
+        
         st.balloons()
-        st.success(f"挑戰結束！你一共答啱咗 {st.session_state.score} / {total_questions} 題！")
+        st.success(f"挑戰結束！你一共答啱咗 {score} / {total_questions} 題！")
         st.info(random.choice(encouragements))
+        
+        # 判斷是否達到 7 成（70%）以上
+        if percentage >= 0.7:
+            st.markdown("---")
+            st.markdown("### 🎓 恭喜你達標 7 成以上！觀看小學士鸚鵡的慶祝影片：")
+            # 提示：請將你的影片檔命名為 parrot_celebration.mp4 並放在與此程式碼相同的資料夾中
+            try:
+                st.video("parrot_celebration.mp4")
+            except Exception:
+                st.warning("（提示：找不到影片檔案 `parrot_celebration.mp4`，請確保影片檔與程式碼放在同一資料夾內！）")
         
         # 顯示錯題重溫與重新挑戰專區
         if st.session_state.wrong_questions:
@@ -237,4 +245,3 @@ else:
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
-        

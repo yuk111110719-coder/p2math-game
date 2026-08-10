@@ -115,7 +115,6 @@ if "p2_question_bank" not in st.session_state:
 # 新增小一邏輯與基礎數學題庫
 if "p1_question_bank" not in st.session_state:
     st.session_state.p1_question_bank = [
-      [
     {"q": "樹上有5隻小鳥，飛走了2隻，還剩多少隻小鳥？", "a": "3", "difficulty": "簡單", "options": ["2", "3", "4", "5"]},
     {"q": "3 + 4 = ?", "a": "7", "difficulty": "簡單", "options": ["6", "7", "8", "9"]},
     {"q": "10 - 5 = ?", "a": "5", "difficulty": "簡單", "options": ["3", "4", "5", "6"]},

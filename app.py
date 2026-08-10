@@ -2,11 +2,12 @@ import random
 import math
 import time
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 初始化題庫
-if "question_bank" not in st.session_state:
-    st.session_state.question_bank = [
-        {"q": "小丸有硬幣24個，每3個整齊疊起，可分成幾疊？", "a": "8", "difficulty": "中等"},
+if "p2_question_bank" not in st.session_state:
+    st.session_state.p2_question_bank = [
+        {"q": "丸丸有硬幣24個，每3個整齊疊起，可分成幾疊？", "a": "8", "difficulty": "中等"},
         {"q": "把20隻雞腿每4隻放一袋，可分成幾袋？", "a": "5", "difficulty": "簡單"},
         {"q": "190 + 429 - 250 = ?", "a": "369", "difficulty": "困難"},
         {"q": "56 ÷ 7 = ?", "a": "8", "difficulty": "簡單"},
@@ -17,7 +18,7 @@ if "question_bank" not in st.session_state:
         {"q": "157 + 26 = ?", "a": "183", "difficulty": "中等"},
         {"q": "一本故事書有85頁，小華看了38頁，還有多少頁未看？", "a": "47", "difficulty": "中等"},
         {"q": "學校有5行學生，每行有8人，總共有多少名學生？", "a": "40", "difficulty": "簡單"},
-        {"q": "姊姊有50元，買筆用了15元，買筆記簿用了12元，還有多少元？", "a": "23", "difficulty": "困難"},
+        {"q": "豆豆有50元，買筆用了15元，買筆記簿用了12元，還有多少元？", "a": "23", "difficulty": "困難"},
         {"q": "時鐘的長針是指向數字12，短針指向數字4，現在是甚麼時間？（只需輸入數字）", "a": "4", "difficulty": "簡單"},
         {"q": "82 - (25 + 17) = ?", "a": "40", "difficulty": "困難"},
         {"q": "一個正方形有多少條邊？", "a": "4", "difficulty": "簡單"},
@@ -49,7 +50,7 @@ if "question_bank" not in st.session_state:
         {"q": "一打雞蛋有幾隻？", "a": "12", "difficulty": "簡單"},
         {"q": "2 x 6 = ?", "a": "12", "difficulty": "簡單"},
         {"q": "12 x 1 = ?", "a": "12", "difficulty": "簡單"},
-        {"q": "妹妹原本有11粒朱古力，分給爸爸2粒，分給媽媽2粒，分給姐姐2粒，她還有多少粒?", "a": "5", "difficulty": "簡單"},
+        {"q": "豆豆原本有11粒朱古力，分給爸爸2粒，分給媽媽2粒，分給姐姐2粒，她還有多少粒?", "a": "5", "difficulty": "簡單"},
         {"q": "星期二的前一日是星期幾？", "a": "星期一", "difficulty": "中等", "options": ["日", "一", "三", "四"]},
         {"q": "4 x 5 + 10 = ?", "a": "30", "difficulty": "中等"},
         {"q": "一碟餃子有6隻，買了4碟共有多少隻？", "a": "24", "difficulty": "中等"},
@@ -111,25 +112,45 @@ if "question_bank" not in st.session_state:
         {"q": "一個長方形長度是10米，闊度是5米，周界是多少厘米？", "a": "3000", "difficulty": "困難"}
     ]
 
-def create_question_set(difficulty, question_count):
-    if difficulty == "全部":
-        pool = st.session_state.question_bank
+# 新增小一邏輯與基礎數學題庫
+if "p1_question_bank" not in st.session_state:
+    st.session_state.p1_question_bank = [
+        {"q": "樹上有5隻小鳥，飛走了2隻，還剩多少隻小鳥？", "a": "3", "difficulty": "簡單"},
+        {"q": "3 + 4 = ?", "a": "7", "difficulty": "簡單"},
+        {"q": "10 - 5 = ?", "a": "5", "difficulty": "簡單"},
+        {"q": "下列哪一個數字比 5 大？", "a": "7", "difficulty": "簡單", "options": ["2", "3", "7", "1"]},
+        {"q": "小明有6粒糖，吃了4粒，還剩多少粒？", "a": "2", "difficulty": "簡單"},
+        {"q": "排隊時，前面有3個人，後面有2個人，這隊共有多少個人？", "a": "6", "difficulty": "中等"},
+        {"q": "2 + 3 + 4 = ?", "a": "9", "difficulty": "中等"},
+        {"q": "找出規律填數字：2, 4, 6, 8, ?", "a": "10", "difficulty": "中等", "options": ["9", "10", "11", "12"]},
+        {"q": "一個三角形有幾條邊？", "a": "3", "difficulty": "簡單"},
+        {"q": "下列哪一項是水果？", "a": "蘋果", "difficulty": "簡單", "options": ["書包", "蘋果", "鉛筆", "桌子"]},
+        {"q": "爸爸今年30歲，小明今年5歲，爸爸比小明大多少歲？", "a": "25", "difficulty": "困難"},
+        {"q": "把 8 個皮球分給兩個人，每人分到一樣多，每人分到幾個？", "a": "4", "difficulty": "中等"}
+    ]
+
+def create_question_set(grade, difficulty, question_count):
+    if grade == "小一邏輯挑戰":
+        pool = st.session_state.p1_question_bank
     else:
-        pool = [q for q in st.session_state.question_bank if q.get("difficulty") == difficulty]
-    
-    if not pool:
-        pool = st.session_state.question_bank
+        pool = st.session_state.p2_question_bank
         
+    if difficulty != "全部":
+        filtered_pool = [q for q in pool if q.get("difficulty") == difficulty]
+        if filtered_pool:
+            pool = filtered_pool
+            
     target_count = min(question_count, len(pool))
     selected = random.sample(pool, target_count)
     return selected
 
-def start_game(difficulty, timer_enabled, seconds_per_question, question_count):
+def start_game(grade, difficulty, timer_enabled, seconds_per_question, question_count):
+    st.session_state.grade = grade
     st.session_state.difficulty = difficulty
     st.session_state.timer_enabled = timer_enabled
     st.session_state.seconds_per_question = seconds_per_question
     st.session_state.question_count = question_count
-    st.session_state.selected_questions = create_question_set(difficulty, question_count)
+    st.session_state.selected_questions = create_question_set(grade, difficulty, question_count)
     st.session_state.current_index = 0
     st.session_state.score = 0
     st.session_state.wrong_questions = []
@@ -160,12 +181,13 @@ if not st.session_state.game_started:
     except Exception:
         st.warning("（提示：找不到圖片檔案 `parrot_classroom.jpeg`，請確保圖片檔與程式碼放在同一資料夾內！）")
 
-    st.title("🧮 小二數學趣味挑戰賽")
-    st.write("小朋友你好！歡迎黎到小二數學訓練營，設定下方選項後便開始挑戰啦！")
+    st.title("🧮 趣味智能挑戰賽")
+    st.write("小朋友你好！歡迎來到學習訓練營，請在下方選擇年級與設定選項後開始挑戰啦！")
 
     st.subheader("⚙️ 挑戰設定")
+    grade = st.selectbox("選擇年級 / 挑戰類別：", ["小一邏輯挑戰", "小二數學挑戰"])
     difficulty = st.selectbox("選擇難度級別：", ["全部", "簡單", "中等", "困難"])
-    question_count = st.selectbox("選擇題目數量：", [10, 20, 30, 40], index=1)
+    question_count = st.selectbox("選擇題目數量：", [5, 10, 20, 30], index=1)
     
     timer_enabled = st.checkbox("開啟限時計時器", value=False)
     
@@ -178,7 +200,7 @@ if not st.session_state.game_started:
     seconds_per_question = timer_options[selected_timer_label]
     
     if st.button("🚀 開始挑戰", type="primary"):
-        start_game(difficulty, timer_enabled, seconds_per_question, question_count)
+        start_game(grade, difficulty, timer_enabled, seconds_per_question, question_count)
         st.rerun()
 
 else:
@@ -215,13 +237,11 @@ else:
             
             countdown_timer()
         
-        st.subheader(f"第 {idx + 1} 題 / 共 {total_questions} 題 (難度：{q_item.get('difficulty', '綜合')})")
+        st.subheader(f"[{st.session_state.grade}] 第 {idx + 1} 題 / 共 {total_questions} 題 (難度：{q_item.get('difficulty', '綜合')})")
         st.markdown(f"**{q_item['q']}**")
-
-        import streamlit.components.v1 as components
-
-        # 讀取粵音的 JavaScript 按鈕元件
-        safe_text = q_item['q'].replace('"', '\\"') # 防止字串內有雙引號造成 JS 錯誤
+        
+        # 粵音朗讀按鈕
+        safe_text = q_item['q'].replace('"', '\\"')
         tts_html = f"""
         <div>
             <button onclick="speakCantonese()" style="
@@ -239,10 +259,10 @@ else:
             <script>
             function speakCantonese() {{
                 if ('speechSynthesis' in window) {{
-                    window.speechSynthesis.cancel(); // 停止之前未講完的語音
+                    window.speechSynthesis.cancel();
                     var utterance = new SpeechSynthesisUtterance("{safe_text}");
-                    utterance.lang = 'zh-HK'; // 設定為香港粵語
-                    utterance.rate = 0.9; // 語速稍微調慢一點，適合小朋友聆聽
+                    utterance.lang = 'zh-HK';
+                    utterance.rate = 0.9;
                     window.speechSynthesis.speak(utterance);
                 }} else {{
                     alert('你的瀏覽器不支援語音朗讀功能');
@@ -288,7 +308,7 @@ else:
         
         if percentage >= 0.7:
             st.markdown("---")
-            st.markdown("### 🎓 恭喜你達標！觀看小學士鸚鵡的慶祝影片：")
+            st.markdown("### 🎓 恭喜你達標 7 成以上！觀看小學士鸚鵡的慶祝影片：")
             try:
                 st.video("parrot_celebration.mp4")
             except Exception:
@@ -326,5 +346,3 @@ else:
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
-
-

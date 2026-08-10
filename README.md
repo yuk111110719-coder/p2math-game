@@ -1,1 +1,1 @@
-# p2math-game
+# Little Thinkers’ Logic Challenge

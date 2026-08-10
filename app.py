@@ -218,7 +218,7 @@ else:
         st.subheader(f"第 {idx + 1} 題 / 共 {total_questions} 題 (難度：{q_item.get('difficulty', '綜合')})")
         st.markdown(f"**{q_item['q']}**")
 
-import streamlit.components.v1 as components
+        import streamlit.components.v1 as components
 
         # 讀取粵音的 JavaScript 按鈕元件
         safe_text = q_item['q'].replace('"', '\\"') # 防止字串內有雙引號造成 JS 錯誤

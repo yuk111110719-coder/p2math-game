@@ -217,6 +217,41 @@ else:
         
         st.subheader(f"第 {idx + 1} 題 / 共 {total_questions} 題 (難度：{q_item.get('difficulty', '綜合')})")
         st.markdown(f"**{q_item['q']}**")
+
+import streamlit.components.v1 as components
+
+        # 讀取粵音的 JavaScript 按鈕元件
+        safe_text = q_item['q'].replace('"', '\\"') # 防止字串內有雙引號造成 JS 錯誤
+        tts_html = f"""
+        <div>
+            <button onclick="speakCantonese()" style="
+                background-color: #4CAF50; 
+                color: white; 
+                padding: 6px 14px; 
+                border: none; 
+                border-radius: 4px; 
+                cursor: pointer; 
+                font-size: 14px;
+                font-weight: bold;
+            ">
+                🔊 讀出粵音
+            </button>
+            <script>
+            function speakCantonese() {{
+                if ('speechSynthesis' in window) {{
+                    window.speechSynthesis.cancel(); // 停止之前未講完的語音
+                    var utterance = new SpeechSynthesisUtterance("{safe_text}");
+                    utterance.lang = 'zh-HK'; // 設定為香港粵語
+                    utterance.rate = 0.9; // 語速稍微調慢一點，適合小朋友聆聽
+                    window.speechSynthesis.speak(utterance);
+                }} else {{
+                    alert('你的瀏覽器不支援語音朗讀功能');
+                }}
+            }}
+            </script>
+        </div>
+        """
+        components.html(tts_html, height=45)
         
         with st.form(f"form_{idx}"):
             if "options" in q_item and q_item["options"]:
@@ -292,37 +327,4 @@ else:
                 del st.session_state[key]
             st.rerun()
 
-import streamlit.components.v1 as components
 
-        # 讀取粵音的 JavaScript 按鈕元件
-        safe_text = q_item['q'].replace('"', '\\"') # 防止字串內有雙引號造成 JS 錯誤
-        tts_html = f"""
-        <div>
-            <button onclick="speakCantonese()" style="
-                background-color: #4CAF50; 
-                color: white; 
-                padding: 6px 14px; 
-                border: none; 
-                border-radius: 4px; 
-                cursor: pointer; 
-                font-size: 14px;
-                font-weight: bold;
-            ">
-                🔊 讀出粵音
-            </button>
-            <script>
-            function speakCantonese() {{
-                if ('speechSynthesis' in window) {{
-                    window.speechSynthesis.cancel(); // 停止之前未講完的語音
-                    var utterance = new SpeechSynthesisUtterance("{safe_text}");
-                    utterance.lang = 'zh-HK'; // 設定為香港粵語
-                    utterance.rate = 0.9; // 語速稍微調慢一點，適合小朋友聆聽
-                    window.speechSynthesis.speak(utterance);
-                }} else {{
-                    alert('你的瀏覽器不支援語音朗讀功能');
-                }}
-            }}
-            </script>
-        </div>
-        """
-        components.html(tts_html, height=45)

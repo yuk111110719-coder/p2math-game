@@ -288,7 +288,7 @@ else:
         
         if percentage >= 0.7:
             st.markdown("---")
-            st.markdown("### 🎓 恭喜你達標 7 成以上！觀看小學士鸚鵡的慶祝影片：")
+            st.markdown("### 🎓 恭喜你達標！觀看小學士鸚鵡的慶祝影片：")
             try:
                 st.video("parrot_celebration.mp4")
             except Exception:

@@ -201,7 +201,7 @@ if not st.session_state.game_started:
     except Exception:
         st.warning("（提示：找不到圖片檔案 `parrot_classroom.jpeg`，請確保圖片檔與程式碼放在同一資料夾內！）")
 
-    st.title("🧮 趣味智能挑戰賽")
+    st.title("🧮 動動腦大冒險")
     st.write("小朋友你好！歡迎來到學習訓練營，請在下方選擇年級與設定選項後開始挑戰啦！")
 
     st.subheader("⚙️ 挑戰設定")

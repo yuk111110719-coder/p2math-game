@@ -146,7 +146,7 @@ if "p1_question_bank" not in st.session_state:
     {"q": "牛牛站在小豬的左邊，小鹿站在小豬的右邊。從左到右中間站的是誰？", "a": "小豬", "difficulty": "中等", "options": ["牛牛", "小鹿", "小豬"]},
     {"q": "把冰塊放在太陽下，一段時間後可能會變成甚麼？\nA. 變成水\nB. 變成石頭\nC. 變成火", "a": "A", "difficulty": "簡單", "options": ["A", "B", "C"]},
     {"q": "要用積木蓋一座高塔，哪一種方法比較不容易倒？\nA. 最下面只放一顆小積木\nB. 最下面放幾顆大積木\nC. 把積木斜斜地放", "a": "B", "difficulty": "中等", "options": ["A", "B", "C"]},
-    {"q": "小安、小美、小樂分別拿蘋果、香蕉、葡萄。小美拿香蕉，小樂拿蘋果，小安沒有拿蘋果。請問小安拿的是甚麼？", "a": "葡萄", "difficulty": "困難", "options": ["蘋果", "香蕉", "葡萄", "橙子"]}
+    {"q": "小安、小美、小樂分別拿蘋果、香蕉、葡萄。小美拿香蕉，小樂拿蘋果，小安沒有拿蘋果，也沒有拿香蕉。請問小安拿的是甚麼？", "a": "葡萄", "difficulty": "困難", "options": ["蘋果", "香蕉", "葡萄", "橙子"]}
 ]
 
 def create_question_set(grade, difficulty, question_count):
@@ -282,7 +282,7 @@ else:
                     window.speechSynthesis.cancel();
                     var utterance = new SpeechSynthesisUtterance("{safe_text}");
                     utterance.lang = 'zh-HK';
-                    utterance.rate = 0.9;
+                    utterance.rate = 0.8;
                     window.speechSynthesis.speak(utterance);
                 }} else {{
                     alert('你的瀏覽器不支援語音朗讀功能');
